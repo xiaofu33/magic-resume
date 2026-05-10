@@ -91,7 +91,10 @@ export interface Education {
   gpa?: string;
   description?: string;
   visible?: boolean;
+  /** 学校标签，用于标记 211/985/双一流工程院校 */
+  tags?: Array<"211" | "985" | "双一流">;
 }
+
 
 export interface Experience {
   id: string;

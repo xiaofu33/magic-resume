@@ -33,9 +33,33 @@ const EducationSection = ({ education, globalSettings, showTitle = true, variant
                 {visibleEducation?.map((edu) => (
                     <motion.div key={edu.id} layout="position" style={{ marginTop: isSidebar ? "12px" : `${globalSettings?.paragraphSpacing}px` }}>
                         <div className={cn("flex gap-4 items-center justify-between", isSidebar && "flex-col items-start gap-1")}>
-                            <div className={cn("font-bold truncate", !flexLayout && !isSidebar && "flex-1")}
+                            <div className={cn("font-bold flex items-center flex-wrap gap-x-1", !flexLayout && !isSidebar && "flex-1")}
                                 style={{ fontSize: `${isSidebar ? (globalSettings?.baseFontSize || 14) + 2 : (globalSettings?.subheaderSize || 16)}px`, color: isSidebar ? "#fff" : "inherit" }}>
                                 {edu.school}
+                                {/* 211/985 标签徽章 */}
+                                {(edu.tags || []).map((tag) => (
+                                    <span
+                                        key={tag}
+                                        style={{
+                                            display: "inline-flex",
+                                            alignItems: "center",
+                                            fontSize: "0.75em",
+                                            lineHeight: 1,
+                                            padding: "0.2em 0.6em",
+                                            borderRadius: "9999px",
+                                            fontWeight: 600,
+                                            border: isSidebar
+                                                ? "1px solid rgba(255,255,255,0.7)"
+                                                : `1px solid ${globalSettings?.themeColor || "currentColor"}`,
+                                            color: isSidebar
+                                                ? "rgba(255,255,255,0.9)"
+                                                : (globalSettings?.themeColor || "currentColor"),
+                                            letterSpacing: "0.03em",
+                                        }}
+                                    >
+                                        {tag}
+                                    </span>
+                                ))}
                             </div>
                             {centerSubtitle && !isSidebar && (
                                 <motion.div layout="position" className={cn("text-subtitleFont truncate", flexLayout ? "ml-[16px]" : "flex-1")}

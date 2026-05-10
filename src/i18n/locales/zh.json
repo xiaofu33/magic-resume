@@ -500,7 +500,8 @@
         "description": "学校简介",
         "gpa": "GPA",
         "startDate": "开始时间",
-        "endDate": "结束时间"
+        "endDate": "结束时间",
+        "tags": "院校标签"
       },
       "placeholders": {
         "school": "请输入学校名称",
@@ -509,6 +510,12 @@
         "date": "请输入就读时间范围",
         "description": "请输入学校简介",
         "gpa": "请输入GPA"
+      },
+      "tags": {
+        "211": "211",
+        "985": "985",
+        "双一流": "双一流",
+        "hint": "点击添加/移除院校标签"
       },
       "buttons": {
         "edit": "编辑",

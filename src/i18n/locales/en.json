@@ -544,7 +544,8 @@
         "gpa": "GPA",
         "location": "Location",
         "startDate": "Start Date",
-        "endDate": "End Date"
+        "endDate": "End Date",
+        "tags": "University Tags"
       },
       "placeholders": {
         "school": "Enter school name",
@@ -554,6 +555,12 @@
         "description": "Enter school description",
         "gpa": "Enter GPA",
         "location": "Enter location"
+      },
+      "tags": {
+        "211": "211",
+        "985": "985",
+        "双一流": "Double First Class",
+        "hint": "Click to add/remove university tags"
       },
       "buttons": {
         "edit": "Edit",

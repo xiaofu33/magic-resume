@@ -27,8 +27,28 @@ const EducationSection: React.FC<EducationSectionProps> = ({ education, globalSe
           <motion.div key={edu.id} layout="position" className={cn("relative pb-6 last:border-0 last:pb-0", showTimeline ? "pl-5 border-l-[1.5px] border-[#e5e7eb]" : "")} style={{ marginTop: `${globalSettings?.paragraphSpacing}px` }}>
             {showTimeline && <div className="absolute left-[-2.25px] top-2.5 w-1.5 h-1.5 bg-black rounded-full" />}
             
-            <motion.h4 layout="position" className="font-bold text-black" style={{ fontSize: `${globalSettings?.subheaderSize || 18}px`, lineHeight: "1.2" }}>
+            <motion.h4 layout="position" className="font-bold text-black flex items-center flex-wrap gap-x-1" style={{ fontSize: `${globalSettings?.subheaderSize || 18}px`, lineHeight: "1.2" }}>
               {edu.school}
+              {/* 211/985 标签徽章 */}
+              {(edu.tags || []).map((tag) => (
+                <span
+                  key={tag}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    fontSize: "0.75em",
+                    lineHeight: 1,
+                    padding: "0.2em 0.6em",
+                    borderRadius: "9999px",
+                    fontWeight: 600,
+                    border: `1px solid ${globalSettings?.themeColor || "#000"}`,
+                    color: globalSettings?.themeColor || "#000",
+                    letterSpacing: "0.03em",
+                  }}
+                >
+                  {tag}
+                </span>
+              ))}
             </motion.h4>
             
             <motion.div layout="position" className="uppercase tracking-[0.1em] text-gray-500 mt-2" style={{ fontSize: `${globalSettings?.subheaderSize || 16}px` }}>

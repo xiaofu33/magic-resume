@@ -25,8 +25,28 @@ const EducationSection = ({ education, globalSettings, showTitle = true }: Educa
                 {visibleEducation?.map((edu) => (
                     <motion.div key={edu.id} layout="position" style={{ marginTop: `${globalSettings?.paragraphSpacing}px` }}>
                         <motion.div layout="position" className="flex items-center gap-2">
-                            <div className={`font-bold ${flexLayout ? "" : "flex-[1.5]"}`} style={{ fontSize: `${globalSettings?.subheaderSize || 16}px` }}>
+                            <div className={`font-bold ${flexLayout ? "" : "flex-[1.5]"} flex items-center flex-wrap gap-x-1`} style={{ fontSize: `${globalSettings?.subheaderSize || 16}px` }}>
                                 {edu.school}
+                                {/* 211/985 标签徽章 */}
+                                {(edu.tags || []).map((tag) => (
+                                    <span
+                                        key={tag}
+                                        style={{
+                                            display: "inline-flex",
+                                            alignItems: "center",
+                                            fontSize: "0.75em",
+                                            lineHeight: 1,
+                                            padding: "0.2em 0.6em",
+                                            borderRadius: "9999px",
+                                            fontWeight: 600,
+                                            border: `1px solid ${globalSettings?.themeColor || "currentColor"}`,
+                                            color: globalSettings?.themeColor || "currentColor",
+                                            letterSpacing: "0.03em",
+                                        }}
+                                    >
+                                        {tag}
+                                    </span>
+                                ))}
                             </div>
                             {centerSubtitle && (
                                 <motion.div layout="position" className={`text-subtitleFont ${flexLayout ? "ml-[16px]" : "flex-1"}`} style={{ fontSize: `${globalSettings?.subheaderSize || 16}px` }}>

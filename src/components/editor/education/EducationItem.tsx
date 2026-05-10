@@ -21,6 +21,38 @@ interface EducationEditorProps {
   onCancel: () => void;
 }
 
+/** 211/985/双一流 标签徽章配置 */
+const SCHOOL_TAGS: Array<{ value: "211" | "985" | "双一流" }> = [
+  { value: "211" },
+  { value: "985" },
+  { value: "双一流" },
+];
+
+/** 预览简历中渲染的徽章组件（只传样式，字号跟随父元素）*/
+export const SchoolTagBadge = ({ tag }: { tag: "211" | "985" }) => {
+  const isBlue = tag === "211";
+  return (
+    <span
+      style={{
+        display: "inline-block",
+        fontSize: "0.7em",
+        lineHeight: 1,
+        padding: "1px 4px",
+        borderRadius: "3px",
+        fontWeight: 600,
+        verticalAlign: "middle",
+        marginLeft: "4px",
+        border: `1px solid ${isBlue ? "#93c5fd" : "#fdba74"}`,
+        color: isBlue ? "#1d4ed8" : "#c2410c",
+        backgroundColor: isBlue ? "#eff6ff" : "#fff7ed",
+        letterSpacing: "0.02em",
+      }}
+    >
+      {tag}
+    </span>
+  );
+};
+
 const EducationEditor: React.FC<EducationEditorProps> = ({
   education,
   onSave,
@@ -31,6 +63,15 @@ const EducationEditor: React.FC<EducationEditorProps> = ({
       ...education,
       [field]: value,
     });
+  };
+
+  /** 切换 211/985 标签 */
+  const handleTagToggle = (tag: "211" | "985" | "双一流") => {
+    const currentTags = education.tags || [];
+    const newTags = currentTags.includes(tag)
+      ? currentTags.filter((t) => t !== tag)
+      : [...currentTags, tag];
+    onSave({ ...education, tags: newTags });
   };
 
   return (
@@ -49,6 +90,34 @@ const EducationEditor: React.FC<EducationEditorProps> = ({
             onChange={(value) => handleChange("major", value)}
             placeholder={t("placeholders.major")}
           />
+        </div>
+
+        {/* 211/985 标签选择 */}
+        <div className="flex flex-col gap-1.5">
+          <span className="text-sm font-medium text-foreground">
+            {t("labels.tags")}
+          </span>
+          <div className="flex items-center gap-2">
+            {SCHOOL_TAGS.map((tagConfig) => {
+              const isActive = (education.tags || []).includes(tagConfig.value);
+              return (
+                <button
+                  key={tagConfig.value}
+                  type="button"
+                  onClick={() => handleTagToggle(tagConfig.value)}
+                  title={t("tags.hint")}
+                  className={cn(
+                    "inline-flex items-center gap-1 px-3 py-0.5 rounded-full text-xs font-semibold border transition-all duration-150 cursor-pointer select-none",
+                    isActive
+                      ? "bg-foreground text-background border-foreground"
+                      : "bg-transparent text-muted-foreground border-border hover:border-foreground/40 hover:text-foreground"
+                  )}
+                >
+                  {tagConfig.value}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -87,7 +156,7 @@ const EducationEditor: React.FC<EducationEditorProps> = ({
 
         <Field
           label={t("labels.description")}
-          value={education.description}
+          value={education.description || ""}
           onChange={(value) => handleChange("description", value)}
           type="editor"
           placeholder={t("placeholders.description")}
@@ -96,6 +165,8 @@ const EducationEditor: React.FC<EducationEditorProps> = ({
     </div>
   );
 };
+
+
 
 const EducationItem = ({ education }: { education: Education }) => {
   const { updateEducation, deleteEducation } = useResumeStore();
@@ -183,6 +254,15 @@ const EducationItem = ({ education }: { education: Education }) => {
                   )}
                 >
                   {education.school || "未填写学校"}
+                  {/* 在标题旁显示已选的 211/985 徽章 */}
+                  {(education.tags || []).map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center px-1 py-0 rounded text-[10px] font-medium leading-tight border ml-1 align-middle border-border text-muted-foreground bg-transparent"
+                    >
+                      {tag}
+                    </span>
+                  ))}
                 </h3>
                 {(education.major || education.degree) && (
                   <p
