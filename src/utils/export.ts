@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+import html2canvas from "html2canvas";
 import { PDF_EXPORT_CONFIG } from "@/config";
 import { normalizeFontFamily } from "@/utils/fonts";
 import { ResumeData } from "@/types/resume";
@@ -267,3 +268,101 @@ export const exportToPdf = async ({
     onEnd?.();
   }
 };
+
+export interface ExportToImageOptions {
+  elementId: string;
+  title: string;
+  onStart?: () => void;
+  onEnd?: () => void;
+  successMessage?: string;
+  errorMessage?: string;
+}
+
+export const exportToImage = async ({
+  elementId,
+  title,
+  onStart,
+  onEnd,
+  successMessage,
+  errorMessage
+}: ExportToImageOptions) => {
+  const exportStartTime = performance.now();
+  onStart?.();
+
+  let container: HTMLDivElement | null = null;
+
+  try {
+    const originalElement = document.getElementById(elementId);
+    if (!originalElement) {
+      throw new Error(`Element #${elementId} not found`);
+    }
+
+    const clonedElement = originalElement.cloneNode(true) as HTMLElement;
+
+    // 清除缩放，使其可以在正常 A4 宽度下渲染
+    clonedElement.style.removeProperty("transform");
+    clonedElement.style.removeProperty("transform-origin");
+    clonedElement.style.setProperty("width", "100%", "important");
+    clonedElement.style.setProperty("padding", originalElement.style.padding || "0");
+    clonedElement.style.setProperty("box-sizing", "border-box");
+
+    // 隐藏分页的辅助虚线
+    const pageBreakLines = clonedElement.querySelectorAll<HTMLElement>(".page-break-line");
+    pageBreakLines.forEach((line) => {
+      line.style.display = "none";
+    });
+
+    // 创建一个包裹容器设置标准 A4 宽度
+    container = document.createElement("div");
+    container.style.position = "absolute";
+    container.style.left = "-9999px";
+    container.style.top = "0";
+    container.style.width = "210mm";
+    container.style.background = "white";
+    container.appendChild(clonedElement);
+    document.body.appendChild(container);
+
+    // 将图片转换为 base64 以避开跨域画布污染
+    await optimizeImages(clonedElement);
+
+    // 等待字体加载完成
+    if (document.fonts?.ready) {
+      await document.fonts.ready;
+    }
+
+    // 给予重绘时间
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // 使用 html2canvas 进行高清晰度截图 (scale: 2)
+    const canvas = await html2canvas(clonedElement, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: "#ffffff",
+      logging: false,
+    });
+
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob((b) => resolve(b), "image/png");
+    });
+
+    if (!blob) {
+      throw new Error("Canvas to blob conversion failed");
+    }
+
+    const fileName = `${getSafeFileName(title)}.png`;
+    downloadBlob(blob, fileName);
+
+    if (successMessage) toast.success(successMessage);
+    console.log(`Total image export took ${performance.now() - exportStartTime}ms`);
+  } catch (error) {
+    console.error("Image export error:", error);
+    if (errorMessage) toast.error(errorMessage);
+  } finally {
+    if (container && document.body.contains(container)) {
+      document.body.removeChild(container);
+    }
+    onEnd?.();
+  }
+};
+

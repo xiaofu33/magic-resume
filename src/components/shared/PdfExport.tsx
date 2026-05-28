@@ -3,7 +3,7 @@ import { useTranslations } from "@/i18n/compat/client";
 import { Download, Loader2, ChevronDown } from "lucide-react";
 import { useResumeStore } from "@/store/useResumeStore";
 import { Button } from "@/components/ui/button";
-import { exportResumeAsJson, exportResumeAsMarkdown, exportToPdf } from "@/utils/export";
+import { exportResumeAsJson, exportResumeAsMarkdown, exportToPdf, exportToImage } from "@/utils/export";
 import { exportResumeToBrowserPrint } from "@/utils/print";
 import { cn } from "@/lib/utils";
 import {
@@ -20,6 +20,7 @@ import {
   PrintGlassIcon,
   JsonGlassIcon,
   MarkdownGlassIcon,
+  ImageGlassIcon,
 } from "./GlassIcons";
 
 
@@ -81,6 +82,7 @@ const PdfExport = ({ children }: { children?: React.ReactNode }) => {
   const [isPrinting, setIsPrinting] = useState(false);
   const [isExportingJson, setIsExportingJson] = useState(false);
   const [isExportingMarkdown, setIsExportingMarkdown] = useState(false);
+  const [isExportingImage, setIsExportingImage] = useState(false);
   const { activeResume } = useResumeStore();
   const { globalSettings = {}, title } = activeResume || {};
   const t = useTranslations("pdfExport");
@@ -152,7 +154,18 @@ const PdfExport = ({ children }: { children?: React.ReactNode }) => {
     }
   };
 
-  const isLoading = isExporting || isExportingJson || isExportingMarkdown || isPrinting;
+  const handleImageExport = async () => {
+    await exportToImage({
+      elementId: "resume-preview",
+      title: title || "resume",
+      onStart: () => setIsExportingImage(true),
+      onEnd: () => setIsExportingImage(false),
+      successMessage: t("toast.imageSuccess"),
+      errorMessage: t("toast.imageError")
+    });
+  };
+
+  const isLoading = isExporting || isExportingJson || isExportingMarkdown || isPrinting || isExportingImage;
   const loadingText = isExporting
     ? t("button.exporting")
     : isExportingJson
@@ -161,7 +174,9 @@ const PdfExport = ({ children }: { children?: React.ReactNode }) => {
         ? t("button.exportingMarkdown")
         : isPrinting
           ? t("button.exporting")
-          : "";
+          : isExportingImage
+            ? t("button.exportingImage")
+            : "";
 
   return (
     <Dialog open={isOpen} onOpenChange={(val) => {
@@ -200,7 +215,7 @@ const PdfExport = ({ children }: { children?: React.ReactNode }) => {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
           <ExportCard
             icon={PdfGlassIcon}
             title={t("button.exportPdf")}
@@ -209,6 +224,15 @@ const PdfExport = ({ children }: { children?: React.ReactNode }) => {
             onClick={handleExport}
             bgGradientClass="from-rose-500/10 dark:from-rose-500/20"
             hoverBorderClass="hover:border-rose-500/40 hover:ring-1 hover:ring-rose-500/20"
+          />
+          <ExportCard
+            icon={ImageGlassIcon}
+            title={t("button.exportImage")}
+            description={t("modal.imageDesc")}
+            isLoading={isExportingImage}
+            onClick={handleImageExport}
+            bgGradientClass="from-emerald-500/10 dark:from-emerald-500/20"
+            hoverBorderClass="hover:border-emerald-500/40 hover:ring-1 hover:ring-emerald-500/20"
           />
           <ExportCard
             icon={PrintGlassIcon}

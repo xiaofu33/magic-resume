@@ -116,3 +116,30 @@ export const MarkdownGlassIcon = ({ className, isLoading }: GlassIconProps) => (
     </path>
   </svg>
 );
+
+export const ImageGlassIcon = ({ className, isLoading }: GlassIconProps) => (
+  <svg viewBox="0 0 100 100" fill="none" className={className}>
+    <defs>
+      <filter id="img-glow"><feGaussianBlur stdDeviation="9" /></filter>
+      <linearGradient id="img-glass" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.6" />
+        <stop offset="100%" stopColor="#ffffff" stopOpacity="0.1" />
+      </linearGradient>
+      <linearGradient id="img-border" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
+        <stop offset="100%" stopColor="#ffffff" stopOpacity="0.1" />
+      </linearGradient>
+    </defs>
+    <rect x="15" y="20" width="60" height="50" rx="10" fill="#10b981" filter="url(#img-glow)" opacity="0.75" />
+    <rect x="20" y="25" width="50" height="40" rx="8" fill="#059669" />
+    <rect x="10" y="15" width="60" height="50" rx="10" fill="url(#img-glass)" stroke="url(#img-border)" strokeWidth="1.5" />
+    <circle cx="48" cy="26" r="4" fill="#ffffff">
+      {isLoading && <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite" />}
+    </circle>
+    <path d="M18 50 L32 34 L45 47 L52 40 L62 50" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" opacity="0.9">
+      {isLoading && <animate attributeName="stroke-opacity" values="1;0.4;1" dur="1.5s" repeatCount="indefinite" />}
+    </path>
+    <text x="40" y="60" fill="#ffffff" fontSize="10" fontWeight="bold" fontFamily="sans-serif" textAnchor="middle" opacity="0.9">PNG</text>
+  </svg>
+);
+
